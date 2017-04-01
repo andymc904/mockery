@@ -25,7 +25,8 @@ type WalkerVisitor interface {
 
 func (this *Walker) Walk(visitor WalkerVisitor) (generated bool) {
 	s := spinner.New(spinner.CharSets[14], 100 * time.Millisecond)
-	s.Suffix = "Loading files..."
+	s.Writer = os.Stderr
+	s.Prefix = "Loading files "
 	s.Start()
 
 	p := NewParser()

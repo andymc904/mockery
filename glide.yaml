@@ -8,3 +8,5 @@ import:
   - go/loader
   - imports
 - package: github.com/briandowns/spinner
+- package: github.com/fatih/color
+  version: ^1.4.1

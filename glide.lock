@@ -1,5 +1,5 @@
-hash: 4ebddb5c63fa52b2d39ae8a253e9df8e53beaea514e5830f8c76a2ef59c51fd7
-updated: 2017-04-01T10:30:26.028247139-07:00
+hash: dd041104310824a02c4b410ba20e4776feae83ff8db4c4666c0977c77031a9e1
+updated: 2017-04-01T10:47:07.834535572-07:00
 imports:
 - name: github.com/briandowns/spinner
   version: 1603fb1560c6920aa4df5891ee75ceb789d50ba4
@@ -7,6 +7,14 @@ imports:
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
   subpackages:
   - spew
+- name: github.com/fatih/color
+  version: 9131ab34cf20d2f6d83fdc67168a5430d1c7dc23
+- name: github.com/mattn/go-colorable
+  version: 5411d3eea5978e6cdc258b30de592b60df6aba96
+  repo: https://github.com/mattn/go-colorable
+- name: github.com/mattn/go-isatty
+  version: 57fdcb988a5c543893cc61bce354a6e24ab70022
+  repo: https://github.com/mattn/go-isatty
 - name: github.com/pmezard/go-difflib
   version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
   subpackages:
@@ -20,6 +28,11 @@ imports:
   - mock
   - require
   - suite
+- name: golang.org/x/sys
+  version: e24f485414aeafb646f6fca458b0bf869c0880a1
+  repo: https://go.googlesource.com/sys
+  subpackages:
+  - unix
 - name: golang.org/x/tools
   version: c21bc47f893ee73c18dd2119bb8ff9a2b492c4c6
   subpackages:
