@@ -7,3 +7,4 @@ import:
   subpackages:
   - go/loader
   - imports
+- package: github.com/briandowns/spinner

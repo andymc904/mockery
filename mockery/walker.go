@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"github.com/briandowns/spinner"
+	"time"
 )
 
 type Walker struct {
@@ -22,16 +24,21 @@ type WalkerVisitor interface {
 }
 
 func (this *Walker) Walk(visitor WalkerVisitor) (generated bool) {
-	parser := NewParser()
-	this.doWalk(parser, this.BaseDir, visitor)
+	s := spinner.New(spinner.CharSets[14], 100 * time.Millisecond)
+	s.Suffix = "Loading files..."
+	s.Start()
 
-	err := parser.Load()
+	p := NewParser()
+	this.doWalk(p, this.BaseDir, visitor)
+
+	err := p.Load()
+	s.Stop()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error walking: %v\n", err)
 		os.Exit(1)
 	}
 
-	for _, iface := range parser.Interfaces() {
+	for _, iface := range p.Interfaces() {
 		if !this.Filter.MatchString(iface.Name) {
 			continue
 		}
