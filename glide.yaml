@@ -1,0 +1,9 @@
+package: github.com/vektra/mockery
+import:
+- package: github.com/stretchr/testify
+  subpackages:
+  - mock
+- package: golang.org/x/tools
+  subpackages:
+  - go/loader
+  - imports

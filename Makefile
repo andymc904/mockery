@@ -2,14 +2,16 @@ SHELL=bash
 
 all: clean fmt test install integration
 
+novendor=$(shell glide novendor)
+
 clean:
 	rm -rf mocks
 
 fmt:
-	go fmt ./...
+	go fmt ${novendor}
 
 test:
-	go test ./...
+	go test ${novendor}
 
 install:
 	go install ./...
