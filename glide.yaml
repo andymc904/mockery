@@ -1,0 +1,12 @@
+package: github.com/vektra/mockery
+homepage: https://github.com/vektra/mockery
+excludeDirs:
+- mockery/fixtures
+- mocks
+import:
+- package: golang.org/x/tools
+  subpackages:
+  - go/loader
+  - imports
+testImport:
+- package: github.com/stretchr/testify
