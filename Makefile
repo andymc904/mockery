@@ -14,7 +14,7 @@ test:
 	go test ${novendor}
 
 install:
-	go install ./...
+	go install ${novendor}
 
 integration:
 	rm -rf mocks
