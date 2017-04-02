@@ -8,5 +8,7 @@ import:
   subpackages:
   - go/loader
   - imports
+- package: github.com/urfave/cli
+  version: ^1.19.1
 testImport:
 - package: github.com/stretchr/testify

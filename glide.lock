@@ -1,6 +1,8 @@
-hash: 2eedc542fdfcb98834d028d1d74aaaba9ff46070c156c6821131b8644d86e4a4
-updated: 2017-04-01T21:26:30.323039265-07:00
+hash: bfddd6865f26b9db4bc46f2fdd4c692427d6f4a82d1e01ca4eeb469ffe929b64
+updated: 2017-04-02T09:11:10.117992075-07:00
 imports:
+- name: github.com/urfave/cli
+  version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
 - name: golang.org/x/tools
   version: c21bc47f893ee73c18dd2119bb8ff9a2b492c4c6
   subpackages:

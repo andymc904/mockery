@@ -1,14 +1,14 @@
 package main
 
 import (
-	"flag"
+	"errors"
 	"fmt"
+	"github.com/urfave/cli"
+	"github.com/vektra/mockery/mockery"
 	"os"
 	"regexp"
-	"strings"
-
-	"github.com/vektra/mockery/mockery"
 	"runtime/pprof"
+	"strings"
 )
 
 const regexMetadataChars = "\\.+*?()|[]{}^$"
@@ -26,25 +26,103 @@ type Config struct {
 	fCase      string
 	fNote      string
 	fProfile   string
+	fVersion   bool
 }
 
 func main() {
-	config := parseConfigFromArgs(os.Args)
+	app := cli.NewApp()
+	app.Name = mockery.Name
+	app.Version = mockery.SemVer
+	app.Usage = mockery.Usage
 
+	var config Config
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:        "name",
+			Usage:       "name or matching regular expression of interface to generate mock for",
+			Destination: &config.fName,
+		},
+		cli.StringFlag{
+			Name:        "cpuprofile",
+			Usage:       "write cpu profile to file",
+			Destination: &config.fProfile,
+		},
+		cli.StringFlag{
+			Name:        "note",
+			Usage:       "comment to insert into prologue of each generated file",
+			Destination: &config.fNote,
+		},
+		cli.BoolFlag{
+			Name:        "print",
+			Usage:       "print the generated mock to stdout",
+			Destination: &config.fPrint,
+		},
+		cli.StringFlag{
+			Name:        "case",
+			Usage:       "name the mocked file using casing convention",
+			Value:       "camel",
+			Destination: &config.fCase,
+		},
+		cli.StringFlag{
+			Name:        "output",
+			Usage:       "directory to write mocks to",
+			Value:       "./mocks",
+			Destination: &config.fOutput,
+		},
+		cli.StringFlag{
+			Name:        "outpkg",
+			Usage:       "name of generated package",
+			Value:       "mocks",
+			Destination: &config.fOutpkg,
+		},
+		cli.StringFlag{
+			Name:        "dir",
+			Usage:       "directory to search for interfaces",
+			Value:       ".",
+			Destination: &config.fDir,
+		},
+		cli.BoolFlag{
+			Name:        "recursive",
+			Usage:       "recurse search into sub-directories",
+			Destination: &config.fRecursive,
+		},
+		cli.BoolFlag{
+			Name:        "all",
+			Usage:       "generates mocks for all found interfaces in all sub-directories",
+			Destination: &config.fAll,
+		},
+		cli.BoolFlag{
+			Name:        "inpkg",
+			Usage:       "generate a mock that goes inside the original package",
+			Destination: &config.fIP,
+		},
+		cli.BoolFlag{
+			Name:        "testonly",
+			Usage:       "generate a mock in a _test.go file",
+			Destination: &config.fTO,
+		},
+	}
+
+	app.Action = func(c *cli.Context) error {
+		return run(c, &config)
+	}
+
+	app.Run(os.Args)
+}
+
+func run(c *cli.Context, config *Config) error {
 	var recursive bool
 	var filter *regexp.Regexp
 	var err error
 	var limitOne bool
 
 	if config.fName != "" && config.fAll {
-		fmt.Fprintln(os.Stderr, "Specify -name or -all, but not both")
-		os.Exit(1)
+		return errors.New("Specify -name or -all, but not both")
 	} else if config.fName != "" {
 		recursive = config.fRecursive
 		if strings.ContainsAny(config.fName, regexMetadataChars) {
 			if filter, err = regexp.Compile(config.fName); err != nil {
-				fmt.Fprintln(os.Stderr, "Invalid regular expression provided to -name")
-				os.Exit(1)
+				return errors.New("Invalid regular expression provided to -name")
 			}
 		} else {
 			filter = regexp.MustCompile(fmt.Sprintf("^%s$", config.fName))
@@ -54,15 +132,13 @@ func main() {
 		recursive = true
 		filter = regexp.MustCompile(".*")
 	} else {
-		fmt.Fprintln(os.Stderr, "Use -name to specify the name of the interface or -all for all interfaces found")
-		os.Exit(1)
+		return errors.New("Use -name to specify the name of the interface or -all for all interfaces found")
 	}
 
 	if config.fProfile != "" {
 		f, err := os.Create(config.fProfile)
 		if err != nil {
-			os.Exit(1)
-			return
+			return err
 		}
 
 		pprof.StartCPUProfile(f)
@@ -98,30 +174,8 @@ func main() {
 	generated := walker.Walk(visitor)
 
 	if config.fName != "" && !generated {
-		fmt.Printf("Unable to find %s in any go files under this path\n", config.fName)
-		os.Exit(1)
+		return fmt.Errorf("Unable to find %s in any go files under this path", config.fName)
 	}
-}
 
-func parseConfigFromArgs(args []string) Config {
-	config := Config{}
-
-	flagSet := flag.NewFlagSet(args[0], flag.ExitOnError)
-
-	flagSet.StringVar(&config.fName, "name", "", "name or matching regular expression of interface to generate mock for")
-	flagSet.BoolVar(&config.fPrint, "print", false, "print the generated mock to stdout")
-	flagSet.StringVar(&config.fOutput, "output", "./mocks", "directory to write mocks to")
-	flagSet.StringVar(&config.fOutpkg, "outpkg", "mocks", "name of generated package")
-	flagSet.StringVar(&config.fDir, "dir", ".", "directory to search for interfaces")
-	flagSet.BoolVar(&config.fRecursive, "recursive", false, "recurse search into sub-directories")
-	flagSet.BoolVar(&config.fAll, "all", false, "generates mocks for all found interfaces in all sub-directories")
-	flagSet.BoolVar(&config.fIP, "inpkg", false, "generate a mock that goes inside the original package")
-	flagSet.BoolVar(&config.fTO, "testonly", false, "generate a mock in a _test.go file")
-	flagSet.StringVar(&config.fCase, "case", "camel", "name the mocked file using casing convention")
-	flagSet.StringVar(&config.fNote, "note", "", "comment to insert into prologue of each generated file")
-	flagSet.StringVar(&config.fProfile, "cpuprofile", "", "write cpu profile to file")
-
-	flagSet.Parse(args[1:])
-
-	return config
+	return nil
 }
