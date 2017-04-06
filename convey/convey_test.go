@@ -13,18 +13,22 @@ func TestNewFunc(t *testing.T)	{
 		mock.On("Create", m.Anything).Return(nil)
 		Convey("when create is clalled", func() {
 			err := mock.Create("test")
-			Convey("the mock doesn't return an error", func() {
-				So(err, ShouldBeNil)
-			})
-			Convey("the mock can be asserted with https://github.com/smartystreets/goconvey", func() {
+			Convey("That the assertion works", func() {
+				Convey("the mock doesn't return an error", func() {
+					So(err, ShouldBeNil)
+				})
 				var output string
-				Convey("That func shouldn't panic", func() {
+				Convey("the func shouldn't panic", func() {
 					So(func() {
 						output = m.NumberOfCalls(mock, "Create", 1)
 					}, ShouldNotPanic)
 				})
-				Convey("That the test passed", func() {
+				Convey("the test returned an empty string", func() {
 					So(output, ShouldBeBlank)
+				})
+
+				Convey("the mock gets a check", func() {
+					So(mock, m.NumberOfCalls, "Create", 1)
 				})
 			})
 		})
