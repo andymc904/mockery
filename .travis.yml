@@ -22,4 +22,4 @@ before_script:
   - export PATH="$HOME/bin:$PATH"
   
   # This package is not vendored in to allow clients to choose their own version
-  - go get github.com/stretchr/testify/assert
+  - go get github.com/stretchr/testify/assert/...
