@@ -13,6 +13,16 @@ matrix:
   include:
     - go: "1.5.x"
       env: GO15VENDOREXPERIMENT=1
+      before_script:
+        #install glide
+        - wget "https://github.com/Masterminds/glide/releases/download/0.10.2/glide-0.10.2-linux-amd64.tar.gz"
+        - mkdir -p $HOME/bin
+        - tar -vxz -C $HOME/bin --strip=1 -f glide-0.10.2-linux-amd64.tar.gz
+        - export PATH="$HOME/bin:$PATH"
+
+        # This package is not vendored in to allow clients to choose their own version
+        - go get github.com/stretchr/testify/assert/...
+        - go get ./...
 
 before_script:
   #install glide
